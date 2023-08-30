@@ -1,0 +1,11 @@
+/* 引入字体,测试webpack的字体加载器是否正确 */
+@font-face {
+  font-family: AliMedium;
+  src: url('../assets/ttf/AlibabaPuHuiTi-2-65-Medium.ttf');
+}
+
+#root {
+  color: red;
+  font-size: 50px;
+  font-family: AliMedium;
+}

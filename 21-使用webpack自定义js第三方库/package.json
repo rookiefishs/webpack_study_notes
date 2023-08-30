@@ -1,0 +1,19 @@
+{
+  "name": "format-js",
+  "version": "1.0.0",
+  "description": "format time js library",
+  "main": "dist3(require格式引入自定义第三方库)/webpack-formatTime.js",
+  "scripts": {
+    "build": "webpack"
+  },
+  "keywords": [
+    "format",
+    "library"
+  ],
+  "author": "王志宇",
+  "license": "MIT",
+  "dependencies": {
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  }
+}

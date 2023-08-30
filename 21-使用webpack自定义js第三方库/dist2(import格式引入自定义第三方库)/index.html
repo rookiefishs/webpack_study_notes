@@ -1,0 +1,22 @@
+<!--
+* @Author:WangZhiYu
+* @Date: 2023/08/29 21:48:54
+ * @LastEditors: wangzhiyu
+ * @LastEditTime: 2023-08-29 22:07:31
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script type="module">
+      // 从打包之后的js第三方库webpack-formatTime.js中导入formatTime函数
+      import { formatTime } from './webpack-formatTime.js';
+      document.documentElement.innerHTML = formatTime('yyyy-MM-dd hh:mm:ss', new Date());
+    </script>
+  </body>
+</html>

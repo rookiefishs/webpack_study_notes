@@ -1,0 +1,23 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "build": "webpack"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "css-loader": "^6.8.1",
+    "csv-loader": "^3.0.5",
+    "json5": "^2.2.3",
+    "lodash": "^4.17.21",
+    "style-loader": "^3.3.3",
+    "toml": "^3.0.0",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "xml-loader": "^1.2.1",
+    "yamljs": "^0.3.0"
+  }
+}

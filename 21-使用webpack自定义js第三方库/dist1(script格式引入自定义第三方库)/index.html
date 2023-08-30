@@ -1,0 +1,22 @@
+<!--
+* @Author:WangZhiYu
+* @Date: 2023/08/29 21:48:54
+ * @LastEditors: wangzhiyu
+ * @LastEditTime: 2023-08-29 21:56:07
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="./webpack-formatTime.js"></script>
+    <script>
+      // webpackFormatTime是在webpack.config.js中配置的导出的第三方库的名称,formatTime是自定义的格式化时间函数
+      document.documentElement.innerHTML = window.webpackFormatTime.formatTime('yyyy-MM-dd hh:mm:ss', new Date());
+    </script>
+  </body>
+</html>
