@@ -2008,6 +2008,31 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
 ### 10. [内容安全策略](https://webpack.docschina.org/guides/csp/)
 
+1. webpack 的内容安全策略简介
+
+   webpack 的内容安全策略(简称为 CSP)是一种安全机制,可以防止跨站脚本工具(XSS)和其他代码注入攻击. webpack 可以给源码中所有可以加载的脚本添加 nonce,以保证经过验证的脚本才可以执行
+
+2. 开启 webpack 的内容安全策略
+
+   在 webpack 的入口脚本中设置一个\_webpack_nonce\_变量,应该为每一个唯一的页面生成和提供一个基于 hash 的 nonce,这也是为什么\_webpack_nonce\_要在入口文件中指定,而不是在 webpack 配置文件中指定的原因,\_webpack_nonce\_应该是一个 base64 格式的字符串
+
+   ```js
+   // 设置_webapck_nonce_
+   _webpack_nonce_ = 'c29tZSBjb29sIHN0cmluZyB3aWxsIHBvcCB1cCAxMjM=';
+
+   // 项目中启用内容安全策略
+   // html文件中的同步设置meta标签的 Content-Security-Policy 头,来告诉浏览器启用CSP
+   <meta http-equiv="Content-Security-Policy" ...>
+
+   // 包含CDN白名单的URL header的示例
+   Content-Security-Policy: default-src 'self'; script-src 'self'
+   https://trusted.cdn.com;
+   ```
+
+3. Trusted Types
+
+   Trusted Types 是 webpack 的一个功能,允许开发者使用动态构建脚本,来满足 CSP require-trusten-types-for 指令的限制,可以在 output.trustedTypes 配置选项中查看此选项
+
 ### 11. [开发 - Vagrant](https://webpack.docschina.org/guides/development-vagrant/)
 
 ### 12. [依赖管理](https://webpack.docschina.org/guides/dependency-management/)
