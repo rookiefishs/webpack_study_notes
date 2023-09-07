@@ -2035,6 +2035,66 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
 ### 11. [开发 - Vagrant](https://webpack.docschina.org/guides/development-vagrant/)
 
+1. 简介: 如果需要开发一个较为高级的项目,并且使用 Vagrant 来实现在虚拟机上运行开发环境,那么就可能需要在虚拟机中运行 webpack
+
+2. 项目配置
+
+   ```js
+   // 1. 配置 Vagrantfile 静态ip
+   Vagrant.configure("2") do |config|
+    config.vm.network :private_network, ip: "10.10.10.61"
+   end
+
+   // 2. 项目安装依赖
+   npm install --save-dev webpack webpack-cli @webpack-cli/serve webpack-dev-server
+
+   // 3. 创建webpack.config.js
+   // webpack.config.js
+   module.exports = {
+    context:__dirname,
+    entry:'./index.js'
+   }
+
+   // 4. 创建index.html文件,并且指定js的src
+   // index.html
+   <!DOCTYPE html>
+    <html>
+      <head>
+        <script src="/bundle.js" charset="utf-8"></script>
+      </head>
+      <body>
+        <h2>Hey!</h2>
+      </body>
+    </html>
+
+   // 5. 创建index.js文件,作为项目入口
+   // index.js
+   console.log('这里是index.js')
+
+   // 6. 启动项目
+   webpack serve --host 0.0.0.0 --client-web-socket-url ws://10.10.10.61:8080/ws --watch-options-poll
+   ```
+
+3. 配合 nginx 的高级用法
+
+   ```js
+   // nginx配置文件中添加以下代码,可以更好的模拟环境
+   server {
+     location / {
+       proxy_pass http://127.0.0.1:8080;
+       proxy_http_version 1.1;
+       proxy_set_header Upgrade $http_upgrade;
+       proxy_set_header Connection "upgrade";
+       error_page 502 @start-webpack-dev-server;
+     }
+
+     location @start-webpack-dev-server {
+       default_type text/plain;
+       return 502 "Please start the webpack-dev-server first.";
+     }
+   }
+   ```
+
 ### 12. [依赖管理](https://webpack.docschina.org/guides/dependency-management/)
 
 ### 13. [安装](https://webpack.docschina.org/guides/installation/)
