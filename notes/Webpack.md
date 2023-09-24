@@ -2097,6 +2097,35 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
 ### 12. [依赖管理](https://webpack.docschina.org/guides/dependency-management/)
 
+1. 依赖管理简介
+
+   1. 依赖管理是 webpack 中的一个重要概念,它用于处理项目中不同模块之间的依赖关系
+
+   2. 在 webpack 中,依赖管理的方法有三种:`ES6模块` `CommonJS` `AMD`
+
+      - ES6 模块: 使用 import 和 export 关键字来导入和导出模块,这种方式可以让开发者在代码中使用更简洁的语法导入与导出模块
+
+      - CommonJS: 使用 require 函数来导入模块,使用 module.exports 或者 exports 对象来导出模块,这种方式是 Nodejs 中常见的模块管理方式
+
+      - AMD: 使用 require 函数来一步导入模块,使用 define 函数来定义模块,这种方式主要用于浏览器端,需要配合 RequireJS 库来实现
+
+2. wenpack 的 require.context 高级功能(可以通过这个 API 创建自己的 context)
+
+   1. webpack 提供了 require.context 这一高级功能,它允许开发者创建自定义的上下文模块,通过 require,context,可以指定一个目录,一个标记,以及一个匹配文件的正则表达式,然后创建一个上下文模块,折腾个上下文模块会导出一个 reuqire 函数,这个函数可以介绍一个请求参数,并返回解析后的模块 ID
+
+   2. 在构建过程中,webpack 会解析代码中的 require.context 调用,将其转换为诗集的模块加载逻辑,这表示 webpack 可以动态的引入模块,但是这可能会导致所有可能用到的模块都包含在最终的打包文件中
+
+   ```js
+   // 语法:require.context(要搜索的目录, (是否搜索其子目录), (匹配文件的正则表达式), (mode = 'sync'));
+   require.context(direction, (useSubdirection = true), (regExp = /^\.\/.*$/), (mode = 'sync'));
+
+   // 示例1:创建一个context,其中文件来自test木,u,request以 test.js结尾
+   require.context('./test', false, /\.test\.js$/);
+
+   // 示例2:创建一个context,其中所有文件都来自其符文剑以及其所有子级文件夹
+   requiore.context('../', true, /\.stories\.js$/);
+   ```
+
 ### 13. [安装](https://webpack.docschina.org/guides/installation/)
 
 ### 14. [模块热替换(webpack 的核心概念点中第 12 条有介绍)](https://webpack.docschina.org/guides/hot-module-replacement/)
