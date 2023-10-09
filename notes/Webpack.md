@@ -2128,7 +2128,44 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
 ### 13. [安装](https://webpack.docschina.org/guides/installation/)
 
+1. 安装 webpack 的各种方法
+
+   ```js
+   // 1. 直接安装webpack,这里的--save-dev是表示不需要在生产环境中使用到webpack,如果需要在生产环境中使用webpack,则这里应该去掉--save-dev
+   npm install --save-dev webpack
+
+   // 如果想要使用webpack4.0 并且希望在终端中使用webpack命令,则需要单独安装webpack-cli
+   npm install --save-dev webpack-cli
+
+   // 对于前端项目来说,通常会使用一些自定义的指令来代替默认的webpack指令,来达到使用自定义命令就调用对应的webpack命令的效果
+   // package.json
+   {
+    "script":{
+      "build":"webpack --config webpack.config.js"
+    }
+   }
+
+   // 终端中执行,这里就相当于执行了webpack --config webpack.config.js命令
+   npm run build
+
+   // ---------------------------------------------------------------------------------------------------------------
+
+   // 2. 全局安装,这里的-g或者-global表示安装到全局中,但是不推荐将webpack安装到全局,因为这会将项目的webpack锁定到指定的版本,并且在使用不同的webpack版本的项目的时候,可能会导致构建失败
+   npm install webpack -g
+   // 或
+   npm install webpack -global
+
+   // ---------------------------------------------------------------------------------------------------------------
+
+   // 3. 安装最新体验版本(尝鲜版)
+   npm install --save-dev webpack@next
+   // 或特定的 tag/分支
+   npm install --save-dev webpack/webpack#<标签名/分支名>
+   ```
+
 ### 14. [模块热替换(webpack 的核心概念点中第 12 条有介绍)](https://webpack.docschina.org/guides/hot-module-replacement/)
+
+> webpack 的核心概念点中第 12 条与 webpack的案例06-开启HRM(模块热替换)中已包含,可以根据这里的备注进行查阅
 
 ### 15. [Tree Shaking](https://webpack.docschina.org/guides/tree-shaking/)
 
@@ -2155,3 +2192,7 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 ### 26. [entry 高级用法](https://webpack.docschina.org/guides/entry-advanced/)
 
 ### 27. [Package exports](https://webpack.docschina.org/guides/package-exports/)
+
+```
+
+```
