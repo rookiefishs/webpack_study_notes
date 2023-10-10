@@ -1,0 +1,14 @@
+{
+  "name": "tree",
+  "sideEffects": false,
+  "mode": "development",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack.config.js",
+  "scripts": {
+    "build": "webpack",
+    "dev": "webpack serve --open"
+  },
+  "author": "w19165802736@163.com",
+  "license": "ISC"
+}
