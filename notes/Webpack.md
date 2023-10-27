@@ -2163,11 +2163,111 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
    npm install --save-dev webpack/webpack#<标签名/分支名>
    ```
 
-### 14. [模块热替换(webpack 的核心概念点中第 12 条有介绍)](https://webpack.docschina.org/guides/hot-module-replacement/)
+### 14. [模块热替换](https://webpack.docschina.org/guides/hot-module-replacement/)
 
-> webpack 的核心概念点中第 12 条与 webpack的案例06-开启HRM(模块热替换)中已包含,可以根据这里的备注进行查阅
+> webpack 的核心概念点中第 12 条与 webpack 的案例 06-开启 HRM(模块热替换)中已包含,可以根据这里的备注进行查阅
 
 ### 15. [Tree Shaking](https://webpack.docschina.org/guides/tree-shaking/)
+
+1. Tree Shaking 介绍
+
+   1. Tree Shaking 是什么: Tree Shaking 是指在代码打包的过程中,通过静态分析的方式删除未使用的代码,从而减小最终打包文件的体积
+
+   2. Tree Shaking 的原理: Tree Shaking 的原理是基于 ES6 模块系统的静态结构的特性,当开发者在项目中使用导入导出模块(import 和 export 等 es6 模块化语法)时,webpack 可以分析出模块之间的引用/依赖关系,从而可以获取到那些代码没有被使用到(没有任何模块导入即可认为是多余的代码),对没有使用到的代码进行消除,从而减少项目输出文件的大小
+
+   3. Tree Shaking 使用的前提:
+
+      1. 使用 ES6 模块化引入与导出
+      2. 在 webpack 中配置的对应的优化选项,例如悬着 mode 为 production
+      3. 代码中不使用动态导入
+
+   4. Tree Shaking 所带来的好处:
+      1. 减少项目打包体积,提升页面加载速度
+      2. 可以避免将未使用的代码传送到生产环境,提高应用的安全性
+      3. 有利于代码的测试与维护,可以更加清晰地看到项目中实际使用的部分
+
+2. 使用 Tree Shaking
+
+   ```js
+   // 1. 项目初始化,新建src文件夹,添加src/main.js文件,创建webpack.config.js与package.json
+
+   // webpack.config.js
+   const path = require('path');
+   const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+   module.exports = {
+     mode: 'production',
+     entry: '/src/main.js',
+     output: {
+       filename: '[name].bundle.js',
+       path: path.resolve(__dirname, 'dist'),
+     },
+     // 配置开发服务器的html文件
+     plugins: [new HtmlWebpackPlugin({ title: 'Tree Shaking学习测试使用' })],
+
+     // 配置开发服务器
+     devServer: {
+       static: './dist',
+       port: 5050,
+     },
+
+     // 配置optimization.usedExports,表示开启Tree Shaking
+     optimization: {
+       usedExports: true,
+     },
+   };
+
+   // package.json
+    {
+      "name": "tree",
+      // sideEffects表示代码是否存在副作用,这将会影响webpack对tree shaking的启用程度以及其他打包的影响
+      "sideEffects": false,
+      "mode": "development",
+      "version": "1.0.0",
+      "description": "",
+      "main": "webpack.config.js",
+      "scripts": {
+        "build": "webpack",
+        "dev": "webpack serve --open"
+      },
+      "author": "w19165802736@163.com",
+      "license": "ISC"
+    }
+
+    // src/main.js
+    // 导入cube方法并使用
+    import { cube } from './math.js';
+
+    function component() {
+      const element = document.createElement('pre');
+
+      element.innerHTML = ['Hello webpack!', '5 cubed is equal to ' + cube(5)].join('\n\n');
+
+      return element;
+    }
+
+    document.body.appendChild(component());
+
+   // src/math.js
+   // 这里导出两个函数,两个函数之间互不影响
+
+   // 如果不进行配置, 在最终打包时无论是否引用了math.js这个模块, 都会将这个js打包到最终文件里
+
+   // 如果webpack.config.js中进行了配置optimization.usedExports为true,表示开启Tree Shaking,那么如果math.js没有被任何模块引用一次,那么math.js就不会被打包到最终的代码中
+
+   // 如果在package.json中配置了"sideEffects": false,或者为sideEffects的value为一些正则,表示选中了该文件,并且webpack.config.js中设置了mode为production和设置了optimization.usedExports为true,那么将会在sideEffects的value的范围内标志这些文件都没有副作用,表示这些文件中没有被应用的代码可以不参与打包
+
+   export function square(x) {
+     return x * x;
+   }
+
+   export function cube(x) {
+     return x * x * x;
+   }
+
+   // 2. 执行命令进行打包,根据对应的配置与注释查看效果
+   npm run build
+   ```
 
 ### 16. [生产环境](https://webpack.docschina.org/guides/production/)
 
@@ -2192,7 +2292,3 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 ### 26. [entry 高级用法](https://webpack.docschina.org/guides/entry-advanced/)
 
 ### 27. [Package exports](https://webpack.docschina.org/guides/package-exports/)
-
-```
-
-```
