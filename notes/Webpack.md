@@ -2269,6 +2269,46 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
    npm run build
    ```
 
+3. 解释 tree Shaking 和 sideEffects
+
+   - sideEffects 和 usedExports(更多被认为是 tree Shaking)是两种不同的优化方式
+
+     - sideEffects 更为有效,因为它允许跳过整个模块/文件的整个文件子树
+     - useExports(tree Shaking) 依赖于 terser 去检测语句中的副作用,他是一个 javascript 的任务,并且没有像 sideEffects 一样简单直接,他不可以跳转子树/依赖由于细则中说副作用需要被评估,虽然导出函数可以正常运作,但是 react 框架的高阶函数在这种情况下可能会出现问题
+
+4. 将函数调用标记为无副作用
+
+   - 可以通过注释来告诉 webpack,某个函数的调用是没有副作用的,只需要通过/_#*PURE*_/注释,就可以被放到函数调用之前,用来标记他们是无副作用的(pure:纯净的)
+
+   - 传到函数中的入参数无法被上一条的注释所标记的,需要单独每一个标记才可以,如果一个没被使用的变量定义的初始值被认为是无副作用的,则会被标记为死代码,不会被执行并且会被压缩工具清除掉,当 optimization.innerGraph 被设置成 true 时,这个行为会被启用
+
+   - 标记无副作用示例
+
+   ```js
+   // 创建double函数
+   function double(num) {
+     return num * 2;
+   }
+
+   // 调用double函数,并且标记为无作用的,纯净的,使用/*#__PURE__*/注释
+   /*#__PURE__*/ double(55);
+   ```
+
+5. 压缩输出结果
+
+   - 经过以上几点的处理,已经找到了没有使用 export 和 import 的未引入代码(dead code),此时,可以通过打包来将这些找到的未引入代码进行删除,以减少项目体积
+
+   - 压缩输出结果
+
+     ```js
+     // 设置webpack.config.js的mode为production,标记打包为生产模式的代码,此时打包的代码就是删除过那些未引入代码的最终代码
+
+     module.exports = {
+      mode:"production",
+      ...
+     };
+     ```
+
 ### 16. [生产环境](https://webpack.docschina.org/guides/production/)
 
 ### 17. [懒加载](https://webpack.docschina.org/guides/lazy-loading/)
