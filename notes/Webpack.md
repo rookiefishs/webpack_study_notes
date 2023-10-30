@@ -2311,6 +2311,176 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
 ### 16. [生产环境](https://webpack.docschina.org/guides/production/)
 
+1. 配置(见 25-生产环境配置 demo)
+
+   - 介绍: development(开发环境)和 production(生产环境),这两个环境下的构建目标差异较大
+
+     - 开发环境: 需要强大的 socure map 和有着 live reloading(实时重新加载)或 hot module replacement(热模块替换)的开发服务器(localhost server)
+
+     - 生产环境: 生产环境更关注压缩 bundle,更轻量的 source map,资源优化等,通过这些优化改善加载时间,并且由于要遵循逻辑分离,建议给每个环境编写独立的 webpack 的配置
+
+     - 补充: 虽然生产环境与开发环境做了区分,但是 webpack 依旧会遵循不重复元素,保留一个通用配置,可以通过 webpack-merge 工具将这些配置合并在一起,这样开发者就可以不必再环境特定的配置中编写代码
+
+   - 使用实例
+
+     ```js
+     // 1.创建package.json
+     npm init
+
+     // 2.配置package.json
+     {
+       "name": "demo",
+       "version": "1.0.0",
+       "description": "",
+       "main": "index.js",
+       "scripts": {
+         "build": "webpack",
+         "start": "webpack serve --open --config webpack.dev.js"
+       },
+       "author": "",
+       "license": "ISC",
+       "dependencies": {
+         "html-webpack-plugin": "^5.5.3",
+         "webpack": "^5.89.0",
+         "webpack-cli": "^5.1.4",
+         "webpack-dev-server": "^4.15.1",
+         "webpack-merge": "^5.10.0"
+       }
+     }
+
+     // 3.创建webpack 的 common,dev,prod配置
+     // webpack.common.js------------------------------------------------------------
+     // 导入nodejs环境的path
+     const path = require('path');
+
+     // 导入htmlwebpackplugin,自动创建html文件
+     const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+     // 配置webpack.config.js
+     module.exports = {
+       // 设置webpack入口
+       entry: {
+         app: './src/index.js',
+       },
+       // 设置插件
+       plugins: [
+         // 设置htmlwebpackplugin配置,这里title指控制html的title为production
+         new HtmlWebpackPlugin({
+           title: 'Production',
+         }),
+       ],
+       // 应用打包配置
+       output: {
+         filename: '[name].bundle.js',
+         path: path.resolve(__dirname, 'dist'),
+         clean: true,
+       },
+     };
+     // --------------------------------------------------------------------------------
+
+     // webpack.dev.js------------------------------------------------------------------
+     // 导入webpack-merge的merge函数
+     const { merge } = require('webpack-merge');
+
+     // 获取common配置
+     const common = require('./webpack.common.js');
+
+     // 创建webpack.config.js配置,这里使用merge将通用的common配置与自定义的开发环境的配置合并
+     module.exports = merge(common, {
+       mode: 'development',
+       devtool: 'inline-source-map',
+       devServer: {
+         static: './dist',
+       },
+     });
+     // --------------------------------------------------------------------------------
+
+     // webpack.prod.js------------------------------------------------------------------
+     // 导入webpack-merge的merge函数
+     const { merge } = require('webpack-merge');
+
+     // 获取common配置
+     const common = require('./webpack.common.js');
+
+     // 创建webpack.config.js配置,这里使用merge将通用的common配置与自定义的生产环境的配置合并
+     module.exports = merge(common, {
+       mode: 'production',
+     });
+     // --------------------------------------------------------------------------------
+
+     // 4.创建src/index.js  src/math.js
+     // src/index.js--------------------------------------------------------------------
+     // 导入cube方法并使用
+     import { cube } from './math.js';
+
+     function component() {
+       const element = document.createElement('pre');
+
+       element.innerHTML = ['Hello webpack!', '5 cubed is equal to ' + cube(5)].join('\n\n');
+
+       return element;
+     }
+
+     document.body.appendChild(component());
+     // ---------------------------------------------------------------------------------
+
+     // src/math.js----------------------------------------------------------------------
+     export function square(x) {
+       return x * x;
+     }
+
+     export function cube(x) {
+       return x * x * x;
+     }
+     // ---------------------------------------------------------------------------------
+     ```
+
+2. npm Scripts(见 26-npm scripts 配置自定义 npm 指令,实现执行的不同 webpack)
+
+   ```js
+   // package.json
+   {
+       "name": "development",
+       "version": "1.0.0",
+       "description": "",
+       "main": "src/index.js",
+       "scripts": {
+        // 这里start启动开发服务器时,使用webpack.dev.js作为webpack配置文件
+       "start": "webpack serve --open --config webpack.dev.js",
+        // 这里打包源代码时,使用webpack.prod.js作为webpack配置文件
+       "build": "webpack --config webpack.prod.js"
+       },
+       "keywords": [],
+       "author": "",
+       "license": "ISC",
+       "devDependencies": {
+         "css-loader": "^0.28.4",
+         "csv-loader": "^2.1.1",
+         "express": "^4.15.3",
+         "file-loader": "^0.11.2",
+         "html-webpack-plugin": "^2.29.0",
+         "style-loader": "^0.18.2",
+         "webpack": "^4.30.0",
+         "webpack-dev-middleware": "^1.12.0",
+         "webpack-dev-server": "^2.9.1",
+         "webpack-merge": "^4.1.0",
+         "xml-loader": "^1.2.1"
+       }
+   }
+   ```
+
+   > 补充: 26-npm scripts 配置自定义 npm 指令,实现执行的不同 webpack 案例根据 25-生产环境配置 demo 得到,只需修改 package.json 即可
+
+3. 指定 mode
+
+4. 压缩(Minification)
+
+5. 源码映射(source mapping)
+
+6. 压缩 CSS
+
+7. CLI 替代选项
+
 ### 17. [懒加载](https://webpack.docschina.org/guides/lazy-loading/)
 
 ### 18. [ECMAScript 模块](https://webpack.docschina.org/guides/ecma-script-modules/)
