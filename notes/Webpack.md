@@ -2471,15 +2471,36 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
    > 补充: 26-npm scripts 配置自定义 npm 指令,实现执行的不同 webpack 案例根据 25-生产环境配置 demo 得到,只需修改 package.json 即可
 
-3. 指定 mode
+3. 指定 mode(见 25-npm scripts 配置自定义 npm 指令,实现执行的不同 webpack 的 webpack.prod.js 或 25-生产环境配置 demo 的 webpack.prod.js)
+
+   - 介绍: 很多 library 通过 process.env.NODE_ENV 环境变量关联,以决定 library 中应该应用哪些内容,例如当 process.envNODE_ENV 没有被设置为 production 时,某个 library 为了简化调试流程,可能会添加额外的日志与测试功能,并且一些 libray 可能针对具体用户的环境,删除或添加一些重要的代码,来进行代码执行方面的优化,从 webpack4 开始,指定 mode 会自动判断配置 definePlugin
 
 4. 压缩(Minification)
 
-5. 源码映射(source mapping)
+   > 默认情况下,webpack4 会在生产模块中自动压缩代码
 
-6. 压缩 CSS
+   - 介绍: 在 webpack4 中,会默认使用 TerserPlugin 插件来对代码进行压缩,也可以使用其他的插件来进行压缩,例如 ClosureWebpackPlugin 等,如果尝试使用一些其他压缩的插件,确保新插件也会按照 tree shake 指南中所说的具有删除未引用代码的能力,并将他作为 optimization.minimizer
 
-7. CLI 替代选项
+5. 源码映射(source mapping)(见 27-源码映射(soure mapping)demo, 27-源码映射(soure mapping)demo 由 25-生产环境配置 demo 得出)
+
+   - 介绍: 可以在生产环境中启用 socure map,它对调试代码与基准测试很有帮助
+
+   - 源码映射实例:
+
+     ```js
+     // package.json
+     // 导入webpack-merge的merge函数
+     const { merge } = require('webpack-merge');
+     // 获取common配置
+     const common = require('./webpack.common.js');
+     // 创建webpack.config.js配置,这里使用merge将通用的common配置与自定义的生产环境的配置合并
+     module.exports = merge(common, {
+       mode: 'production',
+       devtool: 'source-map',
+     });
+     ```
+
+6. CLI 替代选项
 
 ### 17. [懒加载](https://webpack.docschina.org/guides/lazy-loading/)
 
