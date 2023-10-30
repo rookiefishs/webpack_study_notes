@@ -2502,6 +2502,8 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
 6. CLI 替代选项
 
+   - 介绍: 上述的很多选项都可以使用命令行参数设置,例如 optimize-minimize 可以使用 --optimization-minimize 进行设置 ,mode 可以使用--mode 设置,运行 npx webpack --help=verbose 可以查看所有关于 cli 的可用参数,虽然这种简写方式很有效,但是不建议使用,推荐使用 webpack 配置文件的方式进行使用,这样可以提高配置能力以及可阅读性
+
 ### 17. [懒加载](https://webpack.docschina.org/guides/lazy-loading/)
 
 ### 18. [ECMAScript 模块](https://webpack.docschina.org/guides/ecma-script-modules/)
