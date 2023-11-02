@@ -2510,7 +2510,80 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
    - 懒加载(按需加载),是应用的一种优化方式,实际上就是将开发者的代码在一些逻辑断点处分离开,之后在一些代码块中完成某个操作之后,立即引用或即将引用另外一些新的代码块,这样就可以加快应用的初始加载速度,减少总体积,因为有些代码永远不会被加载
 
-2. 实例(见 28-webpack懒加载示例)
+2. 实例(见 28-webpack 懒加载示例)
+
+   ```js
+   // 1. 创建基础package.json
+   {
+     "name": "lazyload",
+     "version": "1.0.0",
+     "description": "",
+     "main": "index.js",
+     "scripts": {
+       "build": "webpack"
+     },
+     "author": "wzy",
+     "license": "ISC",
+     "dependencies": {
+       "html-webpack-plugin": "^5.5.3",
+       "webpack": "^5.89.0",
+       "webpack-cli": "^5.1.4"
+     }
+   }
+
+   // 2. 创建webpack配置文件 webpack.config.js
+   const path = require('path');
+   const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+   module.exports = {
+     mode: 'development',
+     output: {
+       path: path.resolve(__dirname, 'dist'),
+       filename: '[name].bundle.js',
+     },
+     entry: './src/index.js',
+     // 设置插件
+     plugins: [
+       // 设置htmlwebpackplugin配置
+       new HtmlWebpackPlugin({
+         title: 'lazyload',
+       }),
+     ],
+   };
+
+   // 3. 创建核心代码
+   // /src/print.js
+   console.log('print模块已被加载');
+
+   export default () => {
+     console.log('按钮被点击');
+   };
+
+   // /src/index.js
+   // 导入lodash包
+   import _ from 'lodash';
+
+   const element = document.createElement('div');
+   const button = document.createElement('button');
+   const br = document.createElement('br');
+
+   button.innerHTML = 'Click me and look at the console!';
+   element.innerHTML = _.join(['Hello', 'webpack'], ' ');
+   element.appendChild(br);
+   element.appendChild(button);
+
+   // 创建button点击事件,在btn触发点击时才开始导入print模块,通过.then获取导入print的promise的回执,并执行print模块中的代码
+   button.onclick = e =>
+     import('./print').then(module => {
+       // module.default为print模块默认导出的内容
+       const print = module.default;
+       console.log(module, 'module');
+
+       print();
+     });
+
+   document.body.appendChild(element);
+   ```
 
 ### 18. [ECMAScript 模块](https://webpack.docschina.org/guides/ecma-script-modules/)
 
