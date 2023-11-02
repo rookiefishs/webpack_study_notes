@@ -2510,7 +2510,7 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
    - 懒加载(按需加载),是应用的一种优化方式,实际上就是将开发者的代码在一些逻辑断点处分离开,之后在一些代码块中完成某个操作之后,立即引用或即将引用另外一些新的代码块,这样就可以加快应用的初始加载速度,减少总体积,因为有些代码永远不会被加载
 
-2. 实例(见 28-webpack 懒加载示例)
+2. 使用示例(见 28-webpack 懒加载示例)
 
    ```js
    // 1. 创建基础package.json
@@ -2586,6 +2586,68 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
    ```
 
 ### 18. [ECMAScript 模块](https://webpack.docschina.org/guides/ecma-script-modules/)
+
+1. 介绍
+
+   - ECMAScript(ESM)是指在 web 中使用模块的规范,在所有的现代浏览器中都会支持 ECMAScript 中的功能,同时也是 web 中编写模块化代码的推荐方式,并且在 webpack 中支持处理 ECMAScript
+
+2. 使用示例(包括导入,导出,将模块标记为 ESM 等等,见 29-ECMAScript 使用示例)
+
+   ```js
+   // 1. 创建package.json
+   {
+     "name": "ecmascript",
+     "version": "1.0.0",
+     "description": "",
+     "main": "index.js",
+     // 这里的type指,项目中使用的导入导出方式为module,也就是ECMAScript,此配置将会将项目表示为ECMAScript模块系统,同时也是使用文件后缀.cjs和.mjs来表示文件模块系统为commonjs还是modulejs模块系统
+     "type": "module",
+     "scripts": {
+       "build": "webpack",
+       "dev": "webpack serve --open"
+     },
+     "author": "wzy",
+     "license": "ISC",
+     "dependencies": {
+       "html-webpack-plugin": "^5.5.3",
+       "webpack": "^5.89.0",
+       "webpack-cli": "^5.1.4",
+       "webpack-dev-server": "^4.15.1"
+     }
+   }
+
+
+   // 配置webpack.config.js
+   const path = require('path');
+   const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+   module.exports = {
+     output: {
+       path: path.resolve(__dirname, 'dist'),
+       filename: '[name].bundle.js',
+     },
+     entry: './src/index.js',
+     mode: 'development',
+     plugins: [new HtmlWebpackPlugin({ title: 'ECMAScript' })],
+   };
+
+   // 创建项目核心代码
+   // src/index.js(项目入口文件)
+   // 导入数据
+   import { a, b, sum } from './module';
+   console.log('index.js');
+   console.log(a, 'a');
+   console.log(b, 'b');
+   console.log(sum(a, b), 'sum(a,b)');
+
+   // src/module.js(模块文件)
+   // 导出数据
+   export const a = 1;
+   export const b = 2;
+
+   // 导出函数
+   export const sum = (a, b) => a + b;
+   ```
 
 ### 19. [Shimming 预置依赖](https://webpack.docschina.org/guides/shimming/)
 
