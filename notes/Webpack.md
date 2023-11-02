@@ -2506,6 +2506,12 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
 ### 17. [懒加载](https://webpack.docschina.org/guides/lazy-loading/)
 
+1. 懒加载介绍
+
+   - 懒加载(按需加载),是应用的一种优化方式,实际上就是将开发者的代码在一些逻辑断点处分离开,之后在一些代码块中完成某个操作之后,立即引用或即将引用另外一些新的代码块,这样就可以加快应用的初始加载速度,减少总体积,因为有些代码永远不会被加载
+
+2. 实例(见 28-webpack懒加载示例)
+
 ### 18. [ECMAScript 模块](https://webpack.docschina.org/guides/ecma-script-modules/)
 
 ### 19. [Shimming 预置依赖](https://webpack.docschina.org/guides/shimming/)
