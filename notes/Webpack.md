@@ -2651,6 +2651,96 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
 ### 19. [Shimming 预置依赖](https://webpack.docschina.org/guides/shimming/)
 
+- 介绍:
+
+  1. webpack compiler 可以识别并遵循 ES2015 语法,CommonJs 或 AMD 规范编写的模块,但是一些 third party(第三方库)可能会引用一些全局依赖,例如 juqery 中的$,所以这些 library 可能会创建一些需要导出的全局变量,这些 broken modules(不符合规范的模块) 就是 shimming(预置依赖)所发挥作用的地方
+
+  2. webpack 不推荐使用全局依赖,因为 webpack 的理念是使前端更趋向于模块化,也就表示开发者需要编写具有良好的封闭性(well contained),不依赖于隐含依赖的彼此隔离的模块(例如,全局变量等),因此只在必要的时候再去使用这些特定
+
+  > 拓展: 当开发者希望 polyfill 扩展浏览器能力,来支持到更多用户时,在这种情况下,可以将 polyfills 提供给需要修补的浏览器(也就是实现按需加载),这也是 shim 的一个及其有用的适用场景
+
+1. Shimming 预置全局变量
+
+   ```js
+   // 1. 创建项目
+   npm init
+
+   // 2. 创建自定义命令以及初始化依赖包
+   yarn 或 npm i
+   {
+     "name": "shimming_demo",
+     "version": "1.0.0",
+     "description": "shimming-预置全局变量示例",
+     "main": "./src/index.js",
+     "scripts": {
+       "build": "webpack",
+       "dev": "webpack serve --open"
+     },
+     "author": "wangzhiyu <w19165802736@163.com>",
+     "license": "MIT",
+     "dependencies": {
+       "html-webpack-plugin": "^5.5.3",
+       "webpack": "^5.89.0",
+       "webpack-cli": "^5.1.4",
+       "webpack-dev-server": "^4.15.1"
+     }
+   }
+
+   // 3. 配置webpack
+   // webpack.config.js
+   const path = require('path');
+   const HtmlWebpackPlugin = require('html-webpack-plugin');
+   const webpack = require('webpack');
+
+   module.exports = {
+     entry: './src/index.js',
+     output: {
+       path: path.resolve(__dirname, 'dist'),
+       filename: 'main.js',
+     },
+     plugins: [
+       new HtmlWebpackPlugin({ title: 'shimming预置全局变量实例' }),
+       // 配置全局变量
+       new webpack.ProvidePlugin({
+         // 配置_后,会添加一个_全局变量,后面无论在项目的任何地方使用_,都会引用到lodash
+         _: 'lodash',
+         // 添加join为全局变量,来自于lodash.join方法
+         join: ['lodash','join']
+       }),
+     ],
+     mode: 'development',
+   };
+
+
+   // 编写项目代码
+   // /src/index.js
+   function component() {
+     const element = document.createElement('div');
+
+     // 这里使用的_为全局变量,因此本文件不需要导入,也不需要声明_变量
+     element.innerHTML = _.join(['Hello', 'webpack1', 'use _', '<br>'], ' ');
+
+     // 设置拓展的全局变量,直接应用join方法即可
+     element.innerHTML += join(['Hello', 'webpack', 'use join'], ' ');
+
+     return element;
+   }
+
+   document.body.appendChild(component());
+   ```
+
+2. 细粒度 Shimming
+
+3. 全局 Exports
+
+4. 加载 polyfills
+
+5. 进一步优化
+
+6. node 内置
+
+7. 其他工具
+
 ### 20. [TypeScript](https://webpack.docschina.org/guides/typescript/)
 
 ### 21. [Web Workers](https://webpack.docschina.org/guides/web-workers/)
