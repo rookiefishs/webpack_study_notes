@@ -2659,7 +2659,7 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
   > 拓展: 当开发者希望 polyfill 扩展浏览器能力,来支持到更多用户时,在这种情况下,可以将 polyfills 提供给需要修补的浏览器(也就是实现按需加载),这也是 shim 的一个及其有用的适用场景
 
-1. Shimming 预置全局变量
+1. Shimming 预置全局变量(具体示例见 30-Shimming 预置全局变量示例)
 
    ```js
    // 1. 创建项目
@@ -2729,7 +2729,44 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
    document.body.appendChild(component());
    ```
 
-2. 细粒度 Shimming
+2. 细粒度 Shimming(具体示例见 30-Shimming 预置全局变量示例)
+
+   1. 一些遗留模块依赖的 this 所指向的是 window 对象,但是当模块运行在 CommonJS 上下文中,这将会变成一个问题,因为此时的 this 所指向的是 module.exports,这种情况下,可以再 webpack.config.js 中配置 imports-loader 覆盖 this 指向
+
+      ```js
+      // 沿用Shimming 预置全局变量实例,添加部分内容
+
+      // webpack.congfig.js中添加对imports-loader的配置
+      module.exports = {
+        // ...其余配置
+        module: {
+          rules: [
+            {
+              test: require.resolve('./src/index.js'),
+              use: 'imports-loader?wrapper="我是通过imports-loader自定义的this"',
+            },
+          ],
+        },
+      };
+
+      // /src/index.js中使用this,获取配置之后的this指向
+      console.log(this, 'this'); // 会打印出"我是通过imports-loader自定义的this"字符串
+
+      function component() {
+        const element = document.createElement('div');
+        // 这里使用的_为全局变量,因此本文件不需要导入,也不需要声明_变量
+        element.innerHTML = _.join(['Hello', 'webpack1', 'use _', '<br>'], ' ');
+
+        // 设置拓展的全局变量,直接应用join方法即可
+        element.innerHTML += join(['Hello', 'webpack', 'use join'], ' ');
+
+        // 这里的this为imports-loader所指定的内容
+        this.alert("Hmmm, this probably isn't a great idea...");
+        return element;
+      }
+
+      document.body.appendChild(component());
+      ```
 
 3. 全局 Exports
 
