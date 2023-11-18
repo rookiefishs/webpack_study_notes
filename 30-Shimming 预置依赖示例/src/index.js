@@ -2,10 +2,9 @@
  * @Author: wangzhiyu <w19165802736@163.com>
  * @version: 1.0.0
  * @Date: 2023-11-17 15:10:41
- * @LastEditTime: 2023-11-18 15:11:40
+ * @LastEditTime: 2023-11-18 15:31:18
  * @Descripttion: 项目主入口
  */
-
 const { file, parse } = require('./globals.js');
 
 console.log(file, 'file');
@@ -26,3 +25,11 @@ function component() {
 }
 
 document.body.appendChild(component());
+
+fetch('https://jsonplaceholder.typicode.com/users')
+  .then(response => response.json())
+  .then(json => {
+    console.log("We retrieved some data! AND we're confident it will work on a variety of browser distributions.");
+    console.log(json, 'data');
+  })
+  .catch(error => console.error('Something went wrong when fetching this data: ', error));

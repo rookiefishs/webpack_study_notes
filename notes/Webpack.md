@@ -2734,6 +2734,9 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
    1. 一些遗留模块依赖的 this 所指向的是 window 对象,但是当模块运行在 CommonJS 上下文中,这将会变成一个问题,因为此时的 this 所指向的是 module.exports,这种情况下,可以再 webpack.config.js 中配置 imports-loader 覆盖 this 指向
 
       ```js
+      // 下载imports-loader依赖包
+      npm i imports-loader --save-dev
+
       // 沿用Shimming 预置全局变量实例,添加部分内容
 
       // webpack.congfig.js中添加对imports-loader的配置
@@ -2773,6 +2776,9 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
    1. 假设某个 library 或开发者想要自定义一个全局变量,这个全局变量存在于一个自定义脚本中,可以在 webpack 中创建一个全局的导出函数,将自定义脚本中的内容进行导出,这样项目中的其余地方可以直接导入这个全局变量了
 
       ```js
+      // 下载 exports-loader 依赖包
+      npm i exports-loader --save-dev
+
       // 新建 /src/globals.js
       const file = 'blah.txt';
       const helpers = {
@@ -2799,13 +2805,44 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
       };
       ```
 
-4. 加载 polyfills
+4. 加载 polyfills(具体示例见 30-Shimming 预置全局变量示例)
 
-5. 进一步优化
+   1. 加载 polyfills 是为了避免在一些低版本的浏览器中,无法使用那些较新的 js 概念,polyfills 会将原本高级的 js 代码进行降级处理,使其可以在低版本浏览器中使用
 
-6. node 内置
+   ```js
+   // 下载babel-polyfill与whatwg-fetch
+   npm i babel-polyfill whatwg-fetch --save-dev
 
-7. 其他工具
+   // 新建src/polyfills.js来引用babel-polyfill与whatwg-fetch
+   import 'babel-polyfill';
+   import 'whatwg-fetch';
+
+   // 修改index.js实现fetch请求
+   // ...其他代码
+   fetch('https://jsonplaceholder.typicode.com/users')
+   .then(response => response.json())
+   .then(json => {
+    console.log("We retrieved some data! AND we're confident it will work on a variety of browser distributions.");
+    console.log(json, 'data');
+   })
+   .catch(error => console.error('Something went wrong when fetching this data: ', error));
+
+
+   // 修改webpack.config.js
+   module.exports={
+    // ...其余配置
+    entry: {
+      index: './src/index.js',
+      polyfills: './src/polyfills.js',
+    },
+    output: {
+      path: path.resolve(__dirname, 'dist'),
+      filename: '[name].bundle.js',
+    }
+   }
+   ```
+
+> shimming 是一个库(library)，它将一个新的 API 引入到一个旧的环境中，而且仅靠旧的环境中已有的手段实现。polyfill 就是一个用在浏览器 API 上的 shimming。我们通常的做法是先检查当前浏览器是否支持某个 API，如果不支持的话就按需加载对应的 polyfill。然后新旧浏览器就都可以使用这个 API 了。
 
 ### 20. [TypeScript](https://webpack.docschina.org/guides/typescript/)
 

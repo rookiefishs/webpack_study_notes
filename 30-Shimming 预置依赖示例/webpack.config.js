@@ -2,7 +2,7 @@
  * @Author: wangzhiyu <w19165802736@163.com>
  * @version: 1.0.0
  * @Date: 2023-11-17 15:10:54
- * @LastEditTime: 2023-11-18 15:10:57
+ * @LastEditTime: 2023-11-18 15:38:02
  * @Descripttion: webpack配置文件
  */
 
@@ -11,10 +11,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: {
+    index: './src/index.js',
+    polyfills: './src/polyfills.js',
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'main.js',
+    filename: '[name].bundle.js',
   },
   module: {
     rules: [
