@@ -2768,7 +2768,36 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
       document.body.appendChild(component());
       ```
 
-3. 全局 Exports
+3. 全局 Exports(具体示例见 30-Shimming 预置全局变量示例)
+
+   1. 假设某个 library 或开发者想要自定义一个全局变量,这个全局变量存在于一个自定义脚本中,可以在 webpack 中创建一个全局的导出函数,将自定义脚本中的内容进行导出,这样项目中的其余地方可以直接导入这个全局变量了
+
+      ```js
+      // 新建 /src/globals.js
+      const file = 'blah.txt';
+      const helpers = {
+        test: function () {
+          console.log('test something');
+        },
+        parse: function () {
+          console.log('parse something');
+        },
+      };
+
+      // 配置webpack.config.js
+      module.exports = {
+        // ...其他配置
+        module: {
+          // ...其他配置
+          {
+            test: require.resolve('./src/globals.js'),
+            // type=commonjs: 指定模块的导出方式为commonjs
+            // exports=file,multiple|helpers.parse|parse: 指定导出一个对象,对象包含file,multiple两个参数,其中multiple表示导出多个参数,这里表示导出helpers.parse中的parse参数
+            use: 'exports-loader?type=commonjs&exports=file,multiple|helpers.parse|parse',
+          },
+            },
+      };
+      ```
 
 4. 加载 polyfills
 
