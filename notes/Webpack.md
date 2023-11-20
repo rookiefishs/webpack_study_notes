@@ -2846,6 +2846,136 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
 ### 20. [TypeScript](https://webpack.docschina.org/guides/typescript/)
 
+- 介绍: TypeScript 是 JavaScript 的超集,为 js 提供了类型系统,ts 可以被编译为普通的 js 代码
+
+1. 基础配置(见 31-TypeScript 使用示例 demo)
+
+   ```js
+   // 创建基础demo模板(见webpack基础示例demo模板)
+
+   // 1. 下载ts-loader与typescript第三方依赖包
+   yarn add typescript ts-loader --save-dev
+
+   // 2. 新建tsconfig.json,他表示将ts转换为js的一些配置,例如可以转换为es5的js或配置可支持jsx等
+   // /tsconfig.json
+   {
+      "compilerOptions": {
+        "outDir": "./dist/",
+        "noImplicitAny": true,
+        "module": "es6",
+        "target": "es5",
+        "jsx": "react",
+        "allowJs": true,
+        "moduleResolution": "node"
+      }
+    }
+
+   // 3. 配置webpack.config.js处理ts,这里的配置可以指定/src/index.ts为入口,并通过ts-loader加载所有的ts tsx文件,并且在当前目录生成一个bundle.js文件
+   // /webpack.config.js
+   module.exports = {
+    //... 其余配置
+    entry:'./src/index.ts',
+
+    // 配置对应的处理模块
+    module:{
+      rules:[
+        {
+          // 设置所有的.tsx后缀的文件执行此处理
+          test:/.tsx?$/,
+          // 满足条件的文件都是用rs-loader进行加载与处理
+          use:'ts-loader',
+          // 筛选掉node_modules包
+          exclude:'/node_modules/'
+        }
+      ]
+    }
+   },
+   // 配置在使用import 或 require导入以下后缀的文件时,可以省略后缀名称
+   resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
+   },
+   output:{
+    filename:'bundle.js',
+    path:path.resolve(__dirname,'dist')
+   }
+   ```
+
+2. loader
+
+   - 使用 ts-loader 可以更方便的启用 webpack 功能,例如将其他的 web 资源导入到项目中
+
+   - ts-loader 使用 typescript 编译器 tsc,并且依赖于 tsconfig.json 配置,所以需要确保设置 module 为 CommonJS,否则 webpack 将无法对代码进行 tree Shaking(打包时移除未引用的无用代码)
+
+   - 注意: 如果已经使用了 babel-loader 转译代码,可以使用@babel/preset-typescript 来让 babel 处理 ts 与 js 文件,而不需要额外的使用 loader
+
+3. source map(源码映射 见 31-TypeScript 使用示例 demo)
+
+   ```js
+   // 开启源码映射需要配置tsconfig.json中的参数以及webpack.config.js中的配置
+
+   // tsconfig.json中配置source map
+   {
+      "compilerOptions": {
+        // ...其他配置
+        "sourceMap": true
+      },
+   }
+
+   // webpack.config.js
+   module.exports = {
+    // ... 其他配置
+    devtool: 'inline-source-map',
+   }
+   ```
+
+4. 客户端类型(见 31-TypeScript 使用示例 demo)
+
+   - 可以在 ts 代码中使用 webpack 特定的特性,例如 import.meta.webpack,只需要添加 TypeScript reference 声明,webpack 就会为其提供类型支持
+
+   ```js
+   /// <reference types="webpack/module" />
+   console.log(import.meta.webpack); // 没有上面的声明的话，TypeScript 会抛出一个错误
+
+   // 1. tsconfig.json中需要配置module为es2020,因为在这之前的版本不支持import.meta
+   {
+     "compilerOptions": {
+       "module": "es2020",
+     }
+   }
+
+   // 2. 项目中创建custom.d.ts类型声明文件,否则import.meta将无法读取到.webpack属性
+   // custom.d.ts
+   interface ImportMeta {
+     readonly webpack: {
+       readonly mode: 'development' | 'production';
+       readonly publicPath: string;
+       // 更多 webpack 特定属性...
+     };
+   }
+   ```
+
+5. 使用第三方库
+
+   - 注意点:在 ts 项目中,如果安装第三方库,必须要注意安装第三方库的类型声明文件,否则第三方库将无法获得 ts 的类型支持
+
+   ```js
+   // 例如,需要需要lodash库的类型声明文件,可以通过一下方式进行获取
+   npm i --save-dev @types/lodash
+   ```
+
+6. 导入其他资源
+
+   - 如果需要再 ts 中使用非代码资源,需要告诉 ts 推断导入资源的类型,在项目里创建一个 custon.d.t 的文件,此文件会用于表示项目中 ts 的自定义类型声明
+
+   ```js
+   // 这里表示开发者可以指定任何.svg结尾的导入,将svg声明为一个新的模块,并将模块的content定义为any
+   // custom.d.ts
+   declare module '*.svg' {
+     const content: any;
+     export default content;
+   }
+   ```
+
 ### 21. [Web Workers](https://webpack.docschina.org/guides/web-workers/)
 
 ### 22. [渐进式网络应用程序](https://webpack.docschina.org/guides/progressive-web-application/)
