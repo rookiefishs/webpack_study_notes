@@ -2,7 +2,7 @@
  * @Author: wangzhiyu <w19165802736@163.com>
  * @version: 1.0.0
  * @Date: 2023-11-20 09:28:31
- * @LastEditTime: 2023-11-20 09:37:10
+ * @LastEditTime: 2023-11-21 13:42:15
  * @Descripttion: webpack配置文件
  */
 const path = require('path');
@@ -17,7 +17,7 @@ module.exports = {
   },
   plugins: [
     new htmlWebpackPlugin({
-      title: 'ts使用示例',
+      title: 'title',
     }),
   ],
 };

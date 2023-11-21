@@ -2982,11 +2982,48 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
 > 从 webpack5 开始,可以使用 web workers 来代替 worker-loader
 
-1. 语法
+1. 语法+示例(见 32-web worker 使用语法示例)
 
-2. 示例
+   ```js
+   // 根html(引用核心代码js)
+   <!DOCTYPE html>
+   <html lang="en">
 
-3. nodejs
+   <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+     <title>Document</title>
+   </head>
+
+   <body>
+     <script src="./index.js">
+     </script>
+   </body>
+
+   </html>
+
+   // index.js
+   // 创建worker线程
+   const worker = new Worker('./worker.js');
+
+   setInterval(() => {
+     // 通过postMessage方法传递数据给worker
+     worker.postMessage({ data: [Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() *  100, Math.random() * 100, Math.random() * 100, Math.random() * 100] });
+   }, 1000);
+
+   // 通过onmessage事件监听worker返回的消息
+   worker.onmessage = data => {
+     console.log(data, 'data');
+   };
+
+   // worker.js
+   // 监听主线程发送过来的消息
+   self.onmessage = data => {
+     // 给主线程发送数据消息
+     self.postMessage('我收到了发送的数据:' + JSON.stringify(data.data));
+   };
+   ```
 
 ### 22. [渐进式网络应用程序](https://webpack.docschina.org/guides/progressive-web-application/)
 
