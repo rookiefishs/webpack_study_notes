@@ -2978,6 +2978,16 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
 ### 21. [Web Workers](https://webpack.docschina.org/guides/web-workers/)
 
+- 简介: web workers 是 HTML5 中新增的一套 API 以及属性概念,它可以利用多核 CPU 的能力来提高 web 应用程序的性能,同时可以避免主线程被阻塞导致用户操作不流畅的问题
+
+> 从 webpack5 开始,可以使用 web workers 来代替 worker-loader
+
+1. 语法
+
+2. 示例
+
+3. nodejs
+
 ### 22. [渐进式网络应用程序](https://webpack.docschina.org/guides/progressive-web-application/)
 
 ### 23. [公共路径](https://webpack.docschina.org/guides/public-path/)
