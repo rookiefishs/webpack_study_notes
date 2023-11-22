@@ -3027,6 +3027,68 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
 ### 22. [渐进式网络应用程序](https://webpack.docschina.org/guides/progressive-web-application/)
 
+- 简介: 渐进式网络应用程序全称为 Progressive Web Application,简称为 PWA,主要功能为使用 Service Worker 与缓存技术实现在离线环境下打开程序,并具有较快的加载速度
+
+1. 渐进式网络应用程序开发(见 33-渐进式网络应用程序(PWA)使用示例)
+
+   ```js
+   // 开发前置准备,引用09-webpack管理输出示例demo
+   // 1. 下载http-server包,并在package.json添加自定义指令scripts
+   npm i http-server --save-dev
+
+   // package.json
+   {
+    "scripts":{
+      // ...其他自定义指令
+      "start":"http-server dist"
+    }
+   }
+
+   // 2. 将示例代码进行打包并运行start命令
+   npm run build
+   npm run start // 此时将会根据dist目录下的文件启动本地开发服务器,至此前置准备工作完成,下面需要实现将本地服务器取消,并且网页依旧可以显示内容
+
+   // 3. 添加Workbox
+   // 下载workbox-webpack-plugin插件
+   npm i workbox-webpack-plugin --save-dev
+
+   // 4. 修改webpack.config.js配置
+   const WorkWebpackPlugin = require('workbox-webpack-plugin');
+   module.exports = {
+    // ... 其他配置
+    // 配置插件
+    plugins: [
+      // 设置htmlwebpackplugin参数
+      new HtmlWebpackPlugin({
+        title: 'PWA',
+      }),
+      // 配置渐进式网络应用程序
+      new WorkWebpackPlugin.GenerateSW({
+        clientsClaim: true, // 确保新的service worke控制着客户端的时候,立即激活它,以便更快的更新缓存和响应请求
+        skipWaiting: true, // 用于跳过等待阶段,直接激活新的service workder
+      }),
+    ],
+   }
+   // 5. 注册Service Workder
+   // /src/index.js
+   if ('serviceWorker' in navigator) {
+     window.addEventListener('load', () => {
+       navigator.serviceWorker
+         .register('/service-worker.js')
+         .then(registration => {
+           console.log('SW registered: ', registration);
+         })
+         .catch(registrationError => {
+           console.log('SW registration failed: ', registrationError);
+         });
+     });
+   }
+
+   // 6. 打包代码,启动start服务,之后再关闭服务,然后刷新页面,查看是否还可以正常显示
+   npm run build
+   npm run start
+   ```
+
 ### 23. [公共路径](https://webpack.docschina.org/guides/public-path/)
 
 ### 24. [集成](https://webpack.docschina.org/guides/integrations/)
