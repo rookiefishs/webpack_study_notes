@@ -3091,6 +3091,48 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
 ### 23. [公共路径](https://webpack.docschina.org/guides/public-path/)
 
+- 简介: publicPath 配置选项在各种场景中都非常有用,可以使用它来指定应用程序中所有资源的基础路径
+
+1. 基于环境设置公共路径(见 34-基于环境设置公共路径 demo)
+
+   ```js
+   // 基于webpack基础示例demo模板实现本示例
+
+   // 1. webpack.config.js添加公共指令为全局变量
+   const webpack = require('webpack');
+
+   // 尝试使用环境变量，否则使用根路径
+   const ASSET_PATH = process.env.ASSET_PATH || '/';
+   console.log(ASSET_PATH, 'ASSET_PATH');
+
+   module.exports = {
+     // ...其他配置
+     plugins: [
+       // ...其他配置
+       // 将获取的环境变量中的公共路径或或者为/存储为全局变量
+       new webpack.DefinePlugin({
+         'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH),
+       }),
+     ],
+   };
+
+   // 2. 项目中使用公共路径
+   // /src/index.js
+   console.log('公共路径:' + process.env.ASSET_PATH);
+   ```
+
+2. 运行时设置公共路径(见 35-运行时设置公共路径 demo)
+
+   ```js
+   // 在src/index.js中使用webpack默认暴露的参数__webpack_public_path__ 即可
+   // src/index.js
+   console.log('webpack默认公共路径:' + __webpack_public_path__);
+   
+   __webpack_public_path__ = process.env.ASSET_PATH;
+   
+   console.log('修改后的公共路径:' + __webpack_public_path__);
+   ```
+
 ### 24. [集成](https://webpack.docschina.org/guides/integrations/)
 
 ### 25. [资源模块](https://webpack.docschina.org/guides/asset-modules/)
