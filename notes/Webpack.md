@@ -3127,13 +3127,107 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
    // 在src/index.js中使用webpack默认暴露的参数__webpack_public_path__ 即可
    // src/index.js
    console.log('webpack默认公共路径:' + __webpack_public_path__);
-   
+
    __webpack_public_path__ = process.env.ASSET_PATH;
-   
+
    console.log('修改后的公共路径:' + __webpack_public_path__);
    ```
 
 ### 24. [集成](https://webpack.docschina.org/guides/integrations/)
+
+- 简介: webpack 是一个模块打包工具,而不是一个任务执行工具,任务执行工具用来自动化处理常见的开发任务,例如 lint(代码检测),build(构建),test(测试),相比于模块打包工具,任务执行工具则聚焦在偏重上层的问题上面, 虽然有一些功能重叠,但是如果使用方式正确,任务运行工具和模块打包工具是可以一起协同工作的
+
+1. 集成 node 内置 npm scripts
+
+   - 通常 webpack 用户使用 npm scripts 来作为任务执行工具,但是跨平台支持可能是个问题,虽然有几种解决方案,但是许多用户直接使用 npm scripts 与各种级别的 webpack 配置和工具,所以 webpack 的核心重点虽然是打包,但是可以通过各种拓展,将其用于任务运行工具的常见工作,继承一个单独的工具会增加复杂度,因此在开始前需要权衡利弊
+
+2. 集成 grunt 任务运行器
+
+   - 使用 grunt-weebpack-package 可以将 webpack 或者 webpack-dev-server 作为一项任务执行,访问 grunt template tags 中的统计信息,拆分开发与生产配置等等
+
+     ```js
+     // 下载grunt-webpack-package
+     npm install --save-dev grunt-webpack webpack
+
+     // 注册一个配置并加载任务
+     // GruntFile.js
+     const webpackConfig = require('./webpack.config.js');
+     module.exports = function (grunt) {
+       grunt.initConfig({
+         webpack: {
+           options: {
+             stats: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
+           },
+           prod: webpackConfig,
+           dev: Object.assign({ watch: true }, webpackConfig),
+         },
+       });
+
+       grunt.loadNpmTasks('grunt-webpack');
+     };
+     ```
+
+3. 集成 Gulp 前端自动化工具
+
+   - 在 webpack-stream package 的帮助下,可以直接将 Gulp 与 webpack 进行集成,在这种情况下,不需要单独安装 webpack,因为它是 webpack-stream 直接依赖
+
+     ```js
+     // 下载gulp
+     npm install --save-dev webpack-stream
+
+     // gulpfile.js
+     const gulp = require('gulp'); // 这里将require('webpack')替换为require('gulp')
+     const webpack = require('webpack-stream');
+     gulp.task('default', function () {
+       return gulp
+         .src('src/entry.js')
+         .pipe(
+           webpack({
+             // Any configuration options...
+           })
+         )
+         .pipe(gulp.dest('dist/'));
+     });
+     ```
+
+4. 集成 mocha 前端测试框架
+
+   - mocha-webpack 可以将 mocha 与 webpack 完全集成,这个仓库提供了很多关于其优势与劣势的细节,基本上 mocha-webpack 只是一个简单封装,提供了与 mocha 几乎相同的 cli,并提供各种 webpack 功能,例如改进了 watch mode 和改进了路径分析
+
+   ```js
+   // 安装与使用mocha的示例
+   npm install --save-dev webpack mocha mocha-webpack
+   mocha-webpack 'test/**/*.js'
+   ```
+
+5. 集成 Karma 测试运行器
+
+   - karma-webpack package 运行开发者使用 webpack 预处理 karma 中的文件
+
+   ```js
+   // 下载karma
+   npm install --save-dev webpack karma karma-webpack
+
+   // 配置karma
+   // karma.conf.js
+   module.exports = function (config) {
+     config.set({
+       frameworks: ['webpack'],
+       files: [
+         { pattern: 'test/*_test.js', watched: false },
+         { pattern: 'test/**/*_test.js', watched: false },
+       ],
+       preprocessors: {
+         'test/*_test.js': ['webpack'],
+         'test/**/*_test.js': ['webpack'],
+       },
+       webpack: {
+         // Any custom webpack configuration...
+       },
+       plugins: ['karma-webpack'],
+     });
+   };
+   ```
 
 ### 25. [资源模块](https://webpack.docschina.org/guides/asset-modules/)
 
