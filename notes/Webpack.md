@@ -3231,7 +3231,7 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
 ### 25. [资源模块](https://webpack.docschina.org/guides/asset-modules/)
 
-- 简介: 资源模式(assets module)是一种模块类型,它允许使用资源文件(字体,图标等),并且不需要配置额外的 loader
+- 简介: 资源模式(asset module)是一种模块类型,它允许使用资源文件(字体,图标等),并且不需要配置额外的 loader
 
 1. Resource 资源(见 36-Resource 资源操作)
 
@@ -3257,7 +3257,7 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
          title: 'title',
        }),
      ],
-     // 配置webpack导入.png使用的资源模块为assets/resource
+     // 配置webpack导入.png使用的资源模块为asset/resource
      module: {
        // 所有.png文件都将被发送到输出目录,并且路径将被注入到bundle中,除此之外,也可以为这些png自定义outputPath与publicPath属性
        rules: [
@@ -3273,10 +3273,48 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
    // 4. 使用.png文件
    // src/main.js
-   // 这里在webpack.config.js中配置的.png的资源模块类型为assets/resource,所以可以直接导入.png格式的文件,如果没有配置,直接导入将会报错
+   // 这里在webpack.config.js中配置的.png的资源模块类型为asset/resource,所以可以直接导入.png格式的文件,如果没有配置,直接导入将会报错
    import myPng from './assets/docs.png';
    console.log(myPng, 'myPng');
    ```
+
+2. 自定义输出文件名
+
+   ```js
+   // 默认情况下,asset/resource模块以[hash][ext][query]文件名发送到输出目录,可以通过在webpack中配置output.assetModuleFilename来修改模板字符串
+   const path = require('path');
+   const htmlWebpackPlugin = require('html-webpack-plugin');
+
+   module.exports = {
+     mode: 'development',
+     entry: './src/index.js',
+     output: {
+       filename: '[name].bundle.js',
+       path: path.resolve(__dirname, 'dist'),
+       // TODO: 自定义资源文件输出文件名
+       assetModuleFilename: 'asset/[hash][ext][query]',
+     },
+     plugins: [
+       new htmlWebpackPlugin({
+         title: 'title',
+       }),
+     ],
+     // 配置webpack导入.png使用的资源模块为assets/resource
+     module: {
+       rules: [
+         // 所有.png文件都将被发送到输出目录,并且路径将被注入到bundle中,除此之外,也可以为这些png自定义outputPath与publicPath属性
+         {
+           // 配置这里的资源模块配置对.png文件生效
+           test: /\.png/,
+           // 资源模块类型
+           type: 'asset/resource',
+         },
+       ],
+     },
+   };
+   ```
+
+3. inline 资源
 
 ### 26. [entry 高级用法](https://webpack.docschina.org/guides/entry-advanced/)
 
