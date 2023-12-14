@@ -3278,7 +3278,7 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
    console.log(myPng, 'myPng');
    ```
 
-2. 自定义输出文件名
+2. 自定义输出文件名(见 36-Resource 资源操作)
 
    ```js
    // 默认情况下,asset/resource模块以[hash][ext][query]文件名发送到输出目录,可以通过在webpack中配置output.assetModuleFilename来修改模板字符串
@@ -3314,7 +3314,98 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
    };
    ```
 
-3. inline 资源
+3. inline 资源(见 37-inline 资源操作)
+
+   ```js
+   // 1. 由36-Resource 资源操作为基础修改
+
+   // 2. 项目初始化,下载依赖
+   npm i 或 yarn
+
+   // 3. 修改webpack.config.js
+   const path = require('path');
+   const htmlWebpackPlugin = require('html-webpack-plugin');
+
+   module.exports = {
+     mode: 'development',
+     entry: './src/index.js',
+     output: {
+       filename: '[name].bundle.js',
+       path: path.resolve(__dirname, 'dist'),
+     },
+     plugins: [
+       new htmlWebpackPlugin({
+         title: 'title',
+       }),
+     ],
+     // 配置webpack导入.svg使用的资源模块为assets/inline
+     module: {
+       rules: [
+         {
+           // 配置这里的资源模块配置对.svg文件生效
+           test: /\.svg/,
+           // 配置资源模块类型为inline,这样就可以将对应的文件类型转换为base64等其他内联格式
+           type: 'asset/inline',
+         },
+       ],
+     },
+   };
+
+   // 4. 演示配置
+   // src/main.js
+   // 这里在webpack.config.js中配置的.png的资源模块类型为assets/inline,所以可以直接导入.png格式的文件,如果没有配置,直接导入将会报错
+   import mySvg from './assets/webpack.svg';
+
+   // 获取导入的svg,因为使用的是inline,所以这里的格式为内联的格式(默认为base64)
+   console.log(mySvg, 'mySvg');
+
+   // 设置body背景样式
+   document.body.style.background = `url(${mySvg})`;
+   ```
+
+4. 自定义 data URI 格式(见 37-inline 资源操作)
+
+   ```js
+   // 1. 由 inline 资源(见 37-inline 资源操作)代码为基础进行修改
+
+   // 2. 修改webpack.config.js配置
+   const path = require('path');
+   const htmlWebpackPlugin = require('html-webpack-plugin');
+   const svgToMiniDataURI = require('mini-svg-data-uri');
+
+   module.exports = {
+     mode: 'development',
+     entry: './src/index.js',
+     output: {
+       filename: '[name].bundle.js',
+       path: path.resolve(__dirname, 'dist'),
+     },
+     plugins: [
+       new htmlWebpackPlugin({
+         title: 'title',
+       }),
+     ],
+     // 配置webpack导入.svg使用的资源模块为assets/inline
+     module: {
+       rules: [
+         {
+           // 配置这里的资源模块配置对.svg文件生效
+           test: /\.svg/,
+           // 配置资源模块类型为inline,这样就可以将对应的文件类型转换为base64等其他内联格式
+           type: 'asset/inline',
+           // inline默认的输出格式为base64,这里可以通过一个函数来配置输出返回的格式,这里借助了mini-svg-data-uri库,所有返回的格式都会经过mini-svg-data-uri库处理
+           generator: {
+             dataUrl: content => {
+               console.log(content, 'content');
+               content = content.toString();
+               return svgToMiniDataURI(content);
+             },
+           },
+         },
+       ],
+     },
+   };
+   ```
 
 ### 26. [entry 高级用法](https://webpack.docschina.org/guides/entry-advanced/)
 
