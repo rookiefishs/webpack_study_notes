@@ -2,7 +2,7 @@
  * @Author: wangzhiyu <w19165802736@163.com>
  * @version: 1.0.0
  * @Date: 2023-11-20 09:28:31
- * @LastEditTime: 2023-12-14 10:22:23
+ * @LastEditTime: 2023-12-14 14:29:03
  * @Descripttion: webpack配置文件
  */
 const path = require('path');
@@ -14,6 +14,8 @@ module.exports = {
   output: {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),
+    // 自定义资源文件输出文件名
+    assetModuleFilename: 'images/[hash][ext][query]',
   },
   plugins: [
     new htmlWebpackPlugin({
