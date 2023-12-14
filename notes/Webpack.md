@@ -3272,7 +3272,7 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
    };
 
    // 4. 使用.png文件
-   // src/main.js
+   // src/index.js
    // 这里在webpack.config.js中配置的.png的资源模块类型为asset/resource,所以可以直接导入.png格式的文件,如果没有配置,直接导入将会报错
    import myPng from './assets/docs.png';
    console.log(myPng, 'myPng');
@@ -3317,7 +3317,7 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 3. inline 资源(见 37-inline 资源操作)
 
    ```js
-   // 1. 由36-Resource 资源操作为基础修改
+   // 1. 此demo由36-Resource 资源操作为基础修改
 
    // 2. 项目初始化,下载依赖
    npm i 或 yarn
@@ -3352,7 +3352,7 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
    };
 
    // 4. 演示配置
-   // src/main.js
+   // src/index.js
    // 这里在webpack.config.js中配置的.png的资源模块类型为assets/inline,所以可以直接导入.png格式的文件,如果没有配置,直接导入将会报错
    import mySvg from './assets/webpack.svg';
 
@@ -3405,6 +3405,55 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
        ],
      },
    };
+   ```
+
+5. source 资源(见 38-source 资源操作)
+
+   ```js
+   // 1. 此demo由37-inline 资源操作为基础进行修改
+
+   // 2. 项目初始化以及下载依赖
+   npm i 或 yarn
+
+   // 3. 设置webpack.config.js配置
+   const path = require('path');
+   const htmlWebpackPlugin = require('html-webpack-plugin');
+
+   module.exports = {
+     mode: 'development',
+     entry: './src/index.js',
+     output: {
+       filename: '[name].bundle.js',
+       path: path.resolve(__dirname, 'dist'),
+     },
+     plugins: [
+       new htmlWebpackPlugin({
+         title: 'title',
+       }),
+     ],
+     // 配置webpack导入.txt使用的资源模块为assets/source
+     module: {
+       rules: [
+         {
+           // 配置这里的资源模块配置对.txt文件生效
+           test: /\.txt/,
+           // 配置资源模块类型为source,这样就对应的文件将会原样被注入到模块中
+           type: 'asset/source',
+         },
+       ],
+     },
+   };
+
+   // 4. 对应文件演示配置
+   // src/index.js
+   // 这里在webpack.config.js中配置的.txt的资源模块类型为assets/source,所以可以直接导入.txt格式的文件,如果没有配置,直接导入将会报错
+   import myTxT from './assets/source.txt';
+
+   // 获取导入的txt,因为使用的是source,所以这里的格式直接为文件的内容
+   console.log(myTxT, 'myTxT');
+
+   // 设置body背景样式
+   document.body.innerText = myTxT;
    ```
 
 ### 26. [entry 高级用法](https://webpack.docschina.org/guides/entry-advanced/)
