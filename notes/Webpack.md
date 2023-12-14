@@ -3456,6 +3456,165 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
    document.body.innerText = myTxT;
    ```
 
+6. URL 资源(见 39-URL 资源操作)
+
+   ```js
+   // 1. 此demo由38-source 资源操作为基础进行修改
+
+   // 2. 项目初始化 下载依赖
+   npm i 或 yarm
+
+   // 3. 修改webpack.config.js
+   const path = require('path');
+   const htmlWebpackPlugin = require('html-webpack-plugin');
+
+   module.exports = {
+     mode: 'development',
+     entry: './src/index.js',
+     output: {
+       filename: '[name].bundle.js',
+       path: path.resolve(__dirname, 'dist'),
+     },
+     plugins: [
+       new htmlWebpackPlugin({
+         title: 'title',
+       }),
+     ],
+   };
+
+   // 4. URL资源操作
+   // 当使用 new URL('./path', import.meta.url)，webpack 也会创建资源模块。
+   const logo = new URL('./assets/webpack.svg', import.meta.url);
+   console.log(logo);
+   ```
+
+7. 通用资源类型(见 40-通用资源类型示例)
+
+   - 简介: webpack 配置通用资源类型后,将会自动在根据文件大小选择不通的资源加载方式(默认为 8kb,可配置),大于 8kb 则使用 asset/resource,小于则使用 asset/inline
+
+     ```js
+     // 1. 此demo由见 39-URL 资源操作为基础进行修改
+
+     // 2. 项目初始化,下载依赖
+     npm i 或 yarn
+
+     // 3. 配置webpack.config.js
+     const path = require('path');
+     const htmlWebpackPlugin = require('html-webpack-plugin');
+
+     module.exports = {
+       mode: 'development',
+       entry: './src/index.js',
+       output: {
+         filename: '[name].bundle.js',
+         path: path.resolve(__dirname, 'dist'),
+       },
+       plugins: [
+         new htmlWebpackPlugin({
+           title: 'title',
+         }),
+       ],
+       // 设置模块加载处理器
+       module: {
+         rules: [
+           {
+             // 设置应用此模块加载器的文件格式为.txt
+             test: /\.txt/,
+             // 设置模块加载资源类型为通用(自动根据文件大小使用不同的文件资源加载方式)
+             type: 'asset',
+           },
+         ],
+       },
+     };
+
+     // 4. 编写代码,使用配置
+     // src/index.js
+     // 这里myTxt的资源小于8kb,默认使用inline资源加载方式
+     import myTxt from './assets/myTxt.txt';
+
+     // 这里myTxt的资源大于8kb,默认使用inline资源加载方式
+     import myTxt2 from './assets/myTxt2.txt';
+
+     console.log(myTxt, 'myTxt');
+     console.log(myTxt2, 'myTxt2');
+
+     // 5. 拓展: 配置使用inline与resource的文件大小条件
+     // webpack.config.js
+     module.exports = {
+      // ...其他配置
+       module: {
+        rules: [
+          {
+            test: /\.txt/,
+            type: 'asset',
+            parser: {
+              dataUrlCondition: {
+                maxSize: 40 * 1024 // 40kb
+              }
+            }
+          }
+        ]
+      },
+     }
+
+     // src/index.js
+     // 这里myTxt的资源小于8kb,默认使用inline资源加载方式(默认情况下,没有配置webpack通用资源的parser.dataUrlCondition.maxSize时)
+     import myTxt from './assets/myTxt.txt';
+
+     // 这里myTxt的资源大于8kb,默认使用resource资源加载方式(默认情况下,没有配置webpack通用资源的parser.dataUrlCondition.maxSize时)
+     import myTxt2 from './assets/myTxt2.txt';
+
+     // 这里myTxt的资源大于40kb,默认使用inline资源加载方式(配置了webpack通用资源的parser.dataUrlCondition.maxSize时)
+     import myTxt3 from './assets/myTxt3.txt';
+
+     console.log(myTxt, 'myTxt');
+     console.log(myTxt2, 'myTxt2');
+     console.log(myTxt3, 'myTxt3');
+     ```
+
+8. 变更内联 loader 的语法(见 41-变更内联 loader 的语法示例)
+
+   ```js
+   // 1. 此demo由见 40-通用资源类型示例作为基础进行修改
+
+   // 2. 项目初始化,下载依赖
+   npm i 或 yarn
+
+   // 3. 配置webpack.config.js
+   const path = require('path');
+   const htmlWebpackPlugin = require('html-webpack-plugin');
+
+   module.exports = {
+     mode: 'development',
+     entry: './src/index.js',
+     output: {
+       filename: '[name].bundle.js',
+       path: path.resolve(__dirname, 'dist'),
+     },
+     plugins: [
+       new htmlWebpackPlugin({
+         title: 'title',
+       }),
+     ],
+     // 设置模块加载处理器
+     module: {
+       rules: [
+         {
+           // 配置将row替换为asset/source加载
+           resourceQuery: /raw/,
+           type: 'asset/source',
+         },
+       ],
+     },
+   };
+
+   // 4. 使用配置
+   // src/index.js
+   // 拼接上raw,表示使用raw对应的资源加载格式
+   import myPng from './assets/docs.png?raw';
+   console.log(myPng, 'myPng');
+   ```
+
 ### 26. [entry 高级用法](https://webpack.docschina.org/guides/entry-advanced/)
 
 ### 27. [Package exports](https://webpack.docschina.org/guides/package-exports/)
