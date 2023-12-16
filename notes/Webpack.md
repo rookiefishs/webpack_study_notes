@@ -3617,4 +3617,86 @@ webpack 可以在 nodejs v10.13.0+ 版本中运行
 
 ### 26. [entry 高级用法](https://webpack.docschina.org/guides/entry-advanced/)
 
-### 27. [Package exports](https://webpack.docschina.org/guides/package-exports/)
+- 简介: 在不使用 import 样式文件的应用程序中,使用一个数组结构的 entry,并且传入不同类型的文件,可以实现将 css 和 js 文件分离在不同的 bundle
+
+  ```js
+  // 1. 创建示例(基于webpack基础示例demo模板进行修改)
+
+  // 2. 项目初始化,下载对应依赖包
+  yarn
+  yarn add styles-loader sass sass-loader css-loader mini-css-extract-plugin
+
+  // 3. 修改webpack.config.js配置
+  const path = require('path');
+  const htmlWebpackPlugin = require('html-webpack-plugin');
+
+  // 下载MiniCssExtractPlugin插件,此插件的主要作用就是将每个包含css的js文件创建一个文件,并且支持css和sourceMaps的按需加载
+  const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
+  module.exports = {
+    mode: 'development',
+    entry: {
+      home: ['./src/home.js', './src/assets/styles/home.scss'],
+      account: ['./src/account.js', './src/assets/styles/account.scss'],
+    },
+    output: {
+      filename: '[name].bundle.js',
+      path: path.resolve(__dirname, 'dist'),
+    },
+    plugins: [
+      new htmlWebpackPlugin({
+        title: 'title',
+      }),
+      // 使用MiniCssExtractPlugin配置创建的文件名称
+      new MiniCssExtractPlugin({
+        filename: '[name].css',
+      }),
+    ],
+    module: {
+      rules: [
+        {
+          test: /\.scss$/,
+          // 根据当前环境来使用不同的插件
+          use: [process.env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader,'css-loader','sass-loader'],
+        },
+      ],
+    },
+  };
+
+  // 4. 编写home.js,home.scss与account.js与account.scss用于演示配置
+  // src/home.js
+  import _ from 'lodash';
+
+  function component() {
+    const element = document.createElement('div');
+
+    element.innerHTML = _.join(['Hello', 'home'], ' ');
+
+    return element;
+  }
+
+  document.body.appendChild(component());
+
+  // src/account.js
+  import _ from 'lodash';
+
+  function component() {
+    const element = document.createElement('div');
+
+    element.innerHTML = _.join(['Hello', 'account'], ' ');
+
+    return element;
+  }
+
+  document.body.appendChild(component());
+
+  // src/assets/styles/home.scss
+  * {
+    color: red;
+  }
+
+  // src/assets/styles/account.scss
+  * {
+    font-size: 50px;
+  }
+  ```
